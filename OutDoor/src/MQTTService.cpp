@@ -71,6 +71,7 @@ void keepWifiAlive(void *parameters){
     Serial.println(String(millis()) + "[KWA]: " + "Wifi Connected. IP:" + WiFi.localIP());
     }
 
+
 }
 
 void MQTTReconnect(void *parameters){
