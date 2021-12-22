@@ -27,21 +27,10 @@ const char* tuya_root_ca= \
     "-----END CERTIFICATE-----\n";
 WiFiClientSecure espClient;
 PubSubClient client(espClient);
+bool MQTT_is_connected = false;
 
-void keepWifiAlive(void *parameters){
-  // Create a Inifinite loop to Run the Task
-  for(;;){
-    
-    // Check the WIFI status
-    if(WiFi.status() == WL_CONNECTED){
-      Serial.println(String(millis()) + "[KWA] " + "WiFi Connected.");
-      // Delay
-      vTaskDelay(WIFI_STATUS_CHECK_MS / portTICK_PERIOD_MS);
-      // Go to the head of loop
-      continue;
-    }
 
-    // If WIFI is disconnected
+bool WifiConnect(){
     // Set Esp32 to WIFI mode
     WiFi.mode(WIFI_STA);
     // Connect To the WIFI
@@ -51,10 +40,10 @@ void keepWifiAlive(void *parameters){
     unsigned long startAttemptTime = millis();
 
     // Waiting for responsed
-    Serial.println(String(millis()) + "[KWA]: " + "Wifi Connecting");
+    Serial.println(String(millis()) + "[WIFI]: " + "Wifi Connecting");
     while(WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < WIFI_TIMEOUT_MS){
       Serial.print(".");
-      vTaskDelay(1000 / portTICK_PERIOD_MS);
+      delay(1000);
     }
     
     // Format the terminal
@@ -62,75 +51,55 @@ void keepWifiAlive(void *parameters){
 
     // Timeout for connecting
     if(WiFi.status() != WL_CONNECTED){
-      Serial.println(String(millis()) + "[KWA]: " + "Wifi Connecting Failed.");
-      vTaskDelay(WIFI_STATUS_CHECK_MS / portTICK_PERIOD_MS);
-      continue;
+      Serial.println(String(millis()) + "[WIFI]: " + "Wifi Connecting Failed.");
+      return false;
     }
-
-    // If WIFI Connect Successfully
-    Serial.println(String(millis()) + "[KWA]: " + "Wifi Connected. IP:" + WiFi.localIP());
+    else{
+      // If WIFI Connect Successfully
+      Serial.print(String(millis()) + "[WIFI]: " + "Wifi Connected. IP:");
+      Serial.println(WiFi.localIP());
+      return true;
     }
-
-
 }
 
-void MQTTReconnect(void *parameters){
-  for(;;){
-    // If MQTT is disconnect
-    if(!client.connected()){
-      // Try to Connect to MQTT Broker
-      if(WiFi.status() == WL_CONNECTED){
-          if(client.connect(MQTT_DEVICE_ID, MQTT_USERNAME, MQTT_PASSWORD)){
-          Serial.println(String(millis()) + "[MQTT] " + "MQTT Connected.");
-        }
-        // If connect Failed
-        else{
-          Serial.println(String(millis()) + "[MQTT] " + "MQTT Connect Failed.");
-          Serial.println(client.state());
-          vTaskDelay(WIFI_STATUS_CHECK_MS / portTICK_PERIOD_MS);
-        }
-      }
+bool MQTTConnect(){
+  // If MQTT is disconnect
+    if(client.connect(MQTT_DEVICE_ID, MQTT_USERNAME, MQTT_PASSWORD)){
+      Serial.println(String(millis()) + "[MQTT] " + "MQTT Connected.");
+      return true;
     }
-    // If MQTT isconnected
+    // If connect Failed
     else{
-      client.loop();
+      Serial.println(String(millis()) + "[MQTT] " + "MQTT Connect Failed.");
+      Serial.println(client.state());
+      return false;
     }
-  }
 }
 
 void MQTTCallback(char* topic, byte* payload, unsigned int length) {
   // handle message arrived
 }
 
-void MQTT_begin(){
-
-  // Make sure Areudino and WIFI is running on the same core
-  xTaskCreatePinnedToCore(
-    keepWifiAlive,
-    "KWA",
-    5000,
-    NULL,
-    2,
-    NULL,
-    CONFIG_ARDUINO_RUNNING_CORE
-  );
-
-  // Set the CA Certificant
-  espClient.setCACert(tuya_root_ca);
+bool MQTT_begin(){
+  // begin wifi connecting
+  if(WifiConnect()){
+    // If Wifi Connected
+    // Set the CA Certificant
+    espClient.setCACert(tuya_root_ca);
   
-  // Set properties of MQTT
-  client.setServer(MQTT_BROKER, MQTT_PORT);
-  client.setCallback(MQTTCallback);
+    // Set properties of MQTT
+    client.setServer(MQTT_BROKER, MQTT_PORT);
+    client.setCallback(MQTTCallback);
+    if(MQTTConnect()){
+      return true;
+    }
+  }
+  return false;
+}
 
-  
-  // Run MQTT Task
-  xTaskCreate(
-    MQTTReconnect,
-    "MQTT",
-    5000,
-    NULL,
-    1,
-    NULL);
-
-
+void MQTT_stop(){
+  // disconnect the WIFI and MQTT
+  WiFi.disconnect();
+  // client.disconnect();
+  Serial.println(String(millis()) + "[MQTTService]: " + "MQTT and WIFI disconnected.");
 }

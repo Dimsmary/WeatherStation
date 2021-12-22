@@ -19,7 +19,9 @@
 #define MQTT_DEVICE_ID "tuyalink_6ccbd310f957d291686q0f"
 
 // function declaration
-void MQTT_begin();
+bool MQTT_begin();
+void MQTT_stop();
+bool MQTT_status();
 extern WiFiClientSecure espClient;
 extern PubSubClient client;
 
