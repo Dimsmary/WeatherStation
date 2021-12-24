@@ -17,6 +17,8 @@
 #define MQTT_USERNAME "6ccbd310f957d291686q0f|signMethod=hmacSha256,timestamp=0000000000,securemode=1,accessType=1"
 #define MQTT_PASSWORD "6f26e5c30bec2e8444acae390e256a9a9d591feb29e4c999e4fcd811ff2e9241"
 #define MQTT_DEVICE_ID "tuyalink_6ccbd310f957d291686q0f"
+#define MQTT_TOPIC "tylink/6ccbd310f957d291686q0f/thing/property/report"
+#define MQTT_REPORT_TIME 0000114514
 
 // function declaration
 bool MQTT_begin();

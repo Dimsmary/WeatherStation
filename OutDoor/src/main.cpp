@@ -4,7 +4,33 @@
 
 #define DEEP_SLEEP_TIME_SEC 10
 
-StaticJsonDocument<200> doc;
+
+
+void json_send(bool yes_no){
+  // create a json object
+  DynamicJsonDocument doc(1024);
+
+  // add value in root branch
+  doc["msgId"] = "45lkj3551234001";
+  doc["time"] = 1626197189638;
+
+  // create nested object
+  JsonObject data = doc.createNestedObject("data");
+  JsonObject online = data.createNestedObject("online");
+  // add value to nested object
+  online["value"] = yes_no;
+  online["time"] = 1626197189638;
+
+  // print out the json
+  char JSONmessageBuffer[1000];
+
+  serializeJson(doc, JSONmessageBuffer);
+  serializeJsonPretty(doc, Serial);
+  Serial.println();
+  // Serial.println(JSONmessageBuffer);
+  client.publish(MQTT_TOPIC, JSONmessageBuffer);
+}
+
 
 void goToDeepSleep(){
   // Set the WakeUp Time
@@ -14,29 +40,28 @@ void goToDeepSleep(){
   esp_deep_sleep_start();
 }
 
+
 void setup() {
   Serial.begin(9600);
   // Terminate the Bluetooth
   btStop();
   // Try to connect the MQTT Broker
   if(MQTT_begin()){
-    MQTT_stop();
-
-
-    doc["sensor"] = "gps";
-    doc["time"] = 1351824120;
-
-    JsonArray data = doc.createNestedArray("data");
-    data.add(48.756080);
-    data.add(2.302038);
-
-    serializeJson(doc, Serial);
-
-    serializeJsonPretty(doc, Serial);
+    json_send(false);
+    // MQTT_stop();
+    client.loop();
   }
-  goToDeepSleep();
+  else{
+    goToDeepSleep();
+  }
 }
 
+
 void loop() {
-  
+  delay(5000);
+  json_send(true);
+  client.loop();
+  delay(5000);
+  json_send(false);
+  client.loop();
 }
