@@ -1,10 +1,14 @@
 #include <Arduino.h>
+#include "DHT.h"
 #include "MQTTService.hpp"
 #include "ArduinoJson.h"
 
 #define DEEP_SLEEP_TIME_SEC 10
 
+#define DHT_PIN 19
+#define DHT_TYPE DHT22
 
+DHT dht(DHT_PIN, DHT_TYPE);
 
 void json_send(bool yes_no){
   // create a json object
@@ -46,22 +50,36 @@ void setup() {
   // Terminate the Bluetooth
   btStop();
   // Try to connect the MQTT Broker
-  if(MQTT_begin()){
-    json_send(false);
-    // MQTT_stop();
-    client.loop();
-  }
-  else{
-    goToDeepSleep();
-  }
+  // if(MQTT_begin()){
+  //   json_send(false);
+  //   // MQTT_stop();
+  //   client.loop();
+  // }
+  // else{
+  //   goToDeepSleep();
+  // }
 }
 
 
 void loop() {
-  delay(5000);
-  json_send(true);
-  client.loop();
-  delay(5000);
-  json_send(false);
-  client.loop();
+  // delay(5000);
+  // json_send(true);
+  // client.loop();
+  // delay(5000);
+  // json_send(false);
+  // client.loop();
+  delay(2000);
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  if(isnan(h) || isnan(t)){
+      Serial.println("Failed to read from DHT sensor.");
+      return;
+  }
+
+  Serial.print("Humidity:");
+  Serial.print(h);
+  Serial.print("  ");
+  Serial.print("Temperature:");
+  Serial.println(t);
 }
