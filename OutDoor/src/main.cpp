@@ -1,14 +1,20 @@
 #include <Arduino.h>
+#include <SPI.h>
 #include "DHT.h"
+#include "Adafruit_BMP085.h"
+
 #include "MQTTService.hpp"
 #include "ArduinoJson.h"
 
 #define DEEP_SLEEP_TIME_SEC 10
 
-#define DHT_PIN 19
+#define DHT_PIN 4
 #define DHT_TYPE DHT22
 
+#define UV_PIN 35 
+
 DHT dht(DHT_PIN, DHT_TYPE);
+Adafruit_BMP085 bmp;
 
 void json_send(bool yes_no){
   // create a json object
@@ -49,6 +55,8 @@ void setup() {
   Serial.begin(9600);
   // Terminate the Bluetooth
   btStop();
+  bmp.begin();
+  dht.begin();
   // Try to connect the MQTT Broker
   // if(MQTT_begin()){
   //   json_send(false);
@@ -82,4 +90,17 @@ void loop() {
   Serial.print("  ");
   Serial.print("Temperature:");
   Serial.println(t);
+
+
+
+  Serial.print("Temperature = ");
+  Serial.print(bmp.readTemperature());
+  Serial.print(" ");
+    
+  Serial.print("Pressure = ");
+  Serial.print(bmp.readPressure());
+  Serial.println(" Pa");
+  
+  Serial.print("UV Level:");
+  Serial.println(digitalRead(UV_PIN));
 }
