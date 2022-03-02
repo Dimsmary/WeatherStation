@@ -3,11 +3,9 @@
 #include "DHT.h"
 #include "Adafruit_BMP085.h"
 
-
-#include "MQTTService.hpp"
-#include "ArduinoJson.h"
-
-#define DEEP_SLEEP_TIME_SEC 10
+extern "C" {
+  #include <wifi.h>
+}
 
 #define DHT_PIN 4
 #define DHT_TYPE DHT22
@@ -19,51 +17,20 @@
 #define TRIG_2 27
 #define ECHO_2 26
 
-  long duration; // variable for the duration of sound wave travel
-  int distance; // variable for the distance measurement
+long duration; // variable for the duration of sound wave travel
+int distance; // variable for the distance measurement
 
 DHT dht(DHT_PIN, DHT_TYPE);
 Adafruit_BMP085 bmp;
 
-void json_send(bool yes_no){
-  // create a json object
-  DynamicJsonDocument doc(1024);
-
-  // add value in root branch
-  doc["msgId"] = "45lkj3551234001";
-  doc["time"] = 1626197189638;
-
-  // create nested object
-  JsonObject data = doc.createNestedObject("data");
-  JsonObject online = data.createNestedObject("online");
-  // add value to nested object
-  online["value"] = yes_no;
-  online["time"] = 1626197189638;
-
-  // print out the json
-  char JSONmessageBuffer[1000];
-
-  serializeJson(doc, JSONmessageBuffer);
-  serializeJsonPretty(doc, Serial);
-  Serial.println();
-  // Serial.println(JSONmessageBuffer);
-  client.publish(MQTT_TOPIC, JSONmessageBuffer);
-}
-
-
-void goToDeepSleep(){
-  // Set the WakeUp Time
-  esp_sleep_enable_timer_wakeup(DEEP_SLEEP_TIME_SEC * 1000000);
-
-  // Start the deep sleep
-  esp_deep_sleep_start();
-}
-
 
 void setup() {
   Serial.begin(9600);
-  // Terminate the Bluetooth
+  Serial2.begin(9600);
+
+  // Terminate the Bluetooth and Wlan
   btStop();
+  // WiFi.mode(WIFI_OFF);
 
   // init DHT22 and BMP108 Sensor
   bmp.begin();
@@ -74,26 +41,13 @@ void setup() {
   pinMode(TRIG_2, OUTPUT);
   pinMode(ECHO_1, INPUT);
   pinMode(ECHO_2, INPUT);
-  // Try to connect the MQTT Broker
-  // if(MQTT_begin()){
-  //   json_send(false);
-  //   // MQTT_stop();
-  //   client.loop();
-  // }
-  // else{
-  //   goToDeepSleep();
-  // }
-  
+
+  wifi_protocol_init();
 }
 
 
 void loop() {
-  // delay(5000);
-  // json_send(true);
-  // client.loop();
-  // delay(5000);
-  // json_send(false);
-  // client.loop();
+  wifi_uart_service();
   delay(2000);
 
 
@@ -141,5 +95,12 @@ void loop() {
   Serial.print("Distance: ");
   Serial.print(distance);
   Serial.println(" cm");
+}
 
+void tuya_putchar(u8 value){
+  Serial2.write(value);
+}
+
+void tuya_receive(){
+  uart_receive_input(Serial2.read());
 }

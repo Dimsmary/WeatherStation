@@ -1,0 +1,7 @@
+2022-Mar-02 20:40:46
+Computer name:	DESKTOP-UEDQDQR
+Number of cores used in calculation:	4
+Configuration name:	默认
+Project name:	项目(1)
+
+Warnings on last iteration: 
