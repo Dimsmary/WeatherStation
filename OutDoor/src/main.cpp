@@ -2,20 +2,9 @@
 #include <SPI.h>
 #include "DHT.h"
 #include "Adafruit_BMP085.h"
+#include "TuyaWifi.h"
+#include "param.h"
 
-extern "C" {
-  #include <wifi.h>
-}
-
-#define DHT_PIN 4
-#define DHT_TYPE DHT22
-
-#define UV_PIN 35 
-
-#define TRIG_1 12
-#define ECHO_1 14
-#define TRIG_2 27
-#define ECHO_2 26
 
 long duration; // variable for the duration of sound wave travel
 int distance; // variable for the distance measurement
@@ -23,10 +12,29 @@ int distance; // variable for the distance measurement
 DHT dht(DHT_PIN, DHT_TYPE);
 Adafruit_BMP085 bmp;
 
+TuyaWifi my_device;
+
+unsigned char pid[] = {"37f3a84jawqsw4lh"};
+unsigned char mcu_ver[] = {"1.0.0"};
+unsigned char dp_array[][2] = 
+{
+  {temp_pid, DP_TYPE_VALUE},
+  {humi_pid, DP_TYPE_VALUE},
+  {battery_pid, DP_TYPE_VALUE},
+  {pm25_pid, DP_TYPE_VALUE},
+  {wind_angle_pid, DP_TYPE_VALUE},
+  {wind_direct_pid, DP_TYPE_STRING},
+  {wind_speed_pid, DP_TYPE_VALUE},
+  {uv_level_pid, DP_TYPE_VALUE},
+  {pressure_pid, DP_TYPE_VALUE},
+};
 
 void setup() {
   Serial.begin(9600);
   Serial2.begin(9600);
+
+  my_device.init(pid, mcu_ver);
+  my_device.set_dp_cmd_total(dp_array, 9);
 
   // Terminate the Bluetooth and Wlan
   btStop();
@@ -41,14 +49,11 @@ void setup() {
   pinMode(TRIG_2, OUTPUT);
   pinMode(ECHO_1, INPUT);
   pinMode(ECHO_2, INPUT);
-
-  wifi_protocol_init();
 }
 
 
 void loop() {
-  wifi_uart_service();
-  delay(2000);
+  my_device.uart_service();
 
 
 /**** DHT22 Sensor ****/
@@ -76,6 +81,8 @@ void loop() {
   Serial.print(bmp.readPressure());
   Serial.println(" Pa");
   
+/**** UV Sensor ****/
+
   Serial.print("UV Level:");
   Serial.println(digitalRead(UV_PIN));
 
@@ -95,12 +102,8 @@ void loop() {
   Serial.print("Distance: ");
   Serial.print(distance);
   Serial.println(" cm");
-}
 
-void tuya_putchar(u8 value){
-  Serial2.write(value);
-}
-
-void tuya_receive(){
-  uart_receive_input(Serial2.read());
+  if((my_device.mcu_get_wifi_work_state() != WIFI_LOW_POWER) && (my_device.mcu_get_wifi_work_state() != WIFI_CONN_CLOUD) && (my_device.mcu_get_wifi_work_state() != WIFI_SATE_UNKNOW)){
+    
+  }
 }

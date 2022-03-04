@@ -21,8 +21,8 @@
 
 /* some extra features defined begin */
 #define WIFI_CONTROL_SELF_MODE  0
-#define SUPPORT_GREEN_TIME      1
-#define SUPPORT_RTC_TIME        1
+#define SUPPORT_GREEN_TIME      0
+#define SUPPORT_RTC_TIME        0
 /* some extra features defined end */
 
 #ifndef SUPPORT_MCU_FIRM_UPDATE

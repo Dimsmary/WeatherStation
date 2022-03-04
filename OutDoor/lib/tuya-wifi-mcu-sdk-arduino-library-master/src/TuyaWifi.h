@@ -42,8 +42,6 @@ class TuyaWifi
 {
 public:
     TuyaWifi(void);
-    TuyaWifi(HardwareSerial *serial);
-    TuyaWifi(SoftwareSerial *serial);
 
     unsigned char init(unsigned char *pid, unsigned char *mcu_ver);
     void uart_service(void);

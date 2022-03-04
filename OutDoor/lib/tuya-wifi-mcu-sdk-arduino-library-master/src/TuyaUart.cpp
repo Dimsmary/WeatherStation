@@ -151,50 +151,22 @@ unsigned short TuyaUart::set_wifi_uart_buffer(unsigned short dest, const unsigne
     return dest;
 }
 
-void TuyaUart::set_serial(HardwareSerial *serial)
-{
-    _isHWSerial = TY_TRUE;
-    _port = serial;
-}
-
-void TuyaUart::set_serial(SoftwareSerial *serial)
-{
-    _isHWSerial = TY_FALSE;
-    _port = serial;
-}
-
 void TuyaUart::begin(long baud_rate)
 {
-    if (_isHWSerial) {
-        static_cast<HardwareSerial*>(_port)->begin(baud_rate);
-    } else {
-        static_cast<SoftwareSerial*>(_port)->begin(baud_rate);
-    }
+    UART_OBJECT.begin(baud_rate);
 }
 
 char TuyaUart::read(void)
 {
-    if (_isHWSerial) {
-        return static_cast<HardwareSerial*>(_port)->read();
-    } else {
-        return static_cast<SoftwareSerial*>(_port)->read();
-    }
+    return UART_OBJECT.read();
 }
 
 size_t TuyaUart::write(char value)
 {
-    if (_isHWSerial) {
-        return static_cast<HardwareSerial*>(_port)->write(value);
-    } else {
-        return static_cast<SoftwareSerial*>(_port)->write(value);
-    }
+    return UART_OBJECT.write(value);
 }
 
 int TuyaUart::available(void)
 {
-    if (_isHWSerial) {
-        return static_cast<HardwareSerial*>(_port)->available();
-    } else {
-        return static_cast<SoftwareSerial*>(_port)->available();
-    }
+    return UART_OBJECT.available();
 }

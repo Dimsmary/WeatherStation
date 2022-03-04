@@ -24,15 +24,14 @@ TuyaExtras tuya_extras;
 
 /* Constants required to report product information */
 /* Here "key" means key-value */
-const unsigned char pid_key[] = {"{\"p\":\""}; 
-const unsigned char mcu_ver_key[] = {"\",\"v\":\""};
-const unsigned char mode_key[] = {"\",\"m\":"};
-const unsigned char product_info_end[] = {"}"};
+unsigned char pid_key[] = {"{\"p\":\""}; 
+unsigned char mcu_ver_key[] = {"\",\"v\":\""};
+unsigned char mode_key[] = {"\",\"m\":"};
+unsigned char product_info_end[] = {"}"};
 
 /* Protocol serial port initialization */
 TuyaWifi::TuyaWifi(void)
 {
-    tuya_uart.set_serial(&Serial);
 
 #if WIFI_CONTROL_SELF_MODE
     /* nothing to do here */
@@ -41,15 +40,6 @@ TuyaWifi::TuyaWifi(void)
 #endif
 }
 
-TuyaWifi::TuyaWifi(HardwareSerial *serial)
-{
-    tuya_uart.set_serial(serial);
-}
-
-TuyaWifi::TuyaWifi(SoftwareSerial *serial)
-{
-    tuya_uart.set_serial(serial);
-}
 
 /**
  * @description: Initialize product information

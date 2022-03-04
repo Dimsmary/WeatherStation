@@ -14,9 +14,9 @@
 
 #include "../config.h"
 #include "TuyaDefs.h"
-#include <SoftwareSerial.h>
-#include <HardwareSerial.h>
+#include <Arduino.h>
 #include <Stream.h>
+#define UART_OBJECT Serial2
 
 class TuyaUart
 {
@@ -43,8 +43,8 @@ public:
     /* serial set */
     bool _isHWSerial;
 
-    void set_serial(HardwareSerial *serial);
-    void set_serial(SoftwareSerial *serial);
+    // void set_serial(HardwareSerial *serial);
+    // void set_serial(SoftwareSerial *serial);
     void begin(long baud_rate);
     char read(void);
     size_t write(char value);
