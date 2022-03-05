@@ -3,12 +3,18 @@
 #define DHT_PIN 26
 #define DHT_TYPE DHT22
 
-#define UV_PIN 35 
+#define DUST_IN     32
+#define DUST_OUT    34
+#define SAMPLING_TIME 280
+#define DELTA_TIME 40
+#define SLEEP_TIME 9680
 
-#define TRIG_1 12
+#define UV_PIN 36 
+
+#define TRIG_1 27
 #define ECHO_1 14
-#define TRIG_2 27
-#define ECHO_2 26
+#define TRIG_2 5
+#define ECHO_2 18
 
 #define temp_pid    1
 #define humi_pid    2
