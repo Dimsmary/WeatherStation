@@ -16,9 +16,11 @@
 #define TRIG_2 5
 #define ECHO_2 18
 
+#define BAT 39
+
 #define temp_pid    1
 #define humi_pid    2
-#define battery_pid 3
+#define battery_pid 4
 #define pm25_pid        101
 #define wind_angle_pid  102
 #define wind_direct_pid 103

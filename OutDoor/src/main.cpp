@@ -33,6 +33,9 @@ unsigned char dp_array[][2] =
 int temp = 0;
 int humi = 0;
 int uv_index = 0;
+int battery_level = 0;
+int air_pressure = 10;
+unsigned char dp_string_value[8] = {"Hi,Tuya"};
 
 // Tuya CallBack function
 unsigned char dp_process(unsigned char dpid,const unsigned char value[], unsigned short length)
@@ -45,7 +48,13 @@ void dp_update_all(void)
 {
   my_device.mcu_dp_update(temp_pid, temp, 1);
   my_device.mcu_dp_update(humi_pid, humi, 1);
+  my_device.mcu_dp_update(battery_pid, battery_level, 1);
+  my_device.mcu_dp_update(101, battery_level, 1);
+  my_device.mcu_dp_update(102, battery_level, 1);
+  my_device.mcu_dp_update(103, dp_string_value, (sizeof(dp_string_value) / sizeof(dp_string_value[0])));
+  my_device.mcu_dp_update(104, battery_level, 1);
   my_device.mcu_dp_update(uv_level_pid, uv_index, 1);
+  my_device.mcu_dp_update(pressure_pid, air_pressure, 1);
   
 }
 
@@ -81,6 +90,21 @@ void setup() {
 void loop() {
 my_device.uart_service();
 
+/**** Check the Network ****/
+  if ((my_device.mcu_get_wifi_work_state() != WIFI_LOW_POWER) && (my_device.mcu_get_wifi_work_state() != WIFI_CONN_CLOUD) && (my_device.mcu_get_wifi_work_state() != WIFI_SATE_UNKNOW)) {
+    
+  }
+
+Serial.println("-----------");
+
+/**** Battery ****/
+  float battery_voltage = (analogRead(BAT) * 3.3 / 4095 + 0.18) * 2;
+  Serial.println(battery_voltage);
+  battery_level = (battery_voltage - 3.6) / 0.6 * 100 ;
+  Serial.print("Battery: ");
+  Serial.println(battery_level);
+
+
 /**** DHT22 Sensor ****/
   float h = dht.readHumidity();
   float t = dht.readTemperature();
@@ -101,13 +125,15 @@ my_device.uart_service();
 
 /**** BMP108 Sensor ****/
 
-  Serial.print("Temperature = ");
-  Serial.print(bmp.readTemperature());
-  Serial.print(" ");
+  // Serial.print("Temperature = ");
+  // Serial.print(bmp.readTemperature());
+  // Serial.print(" ");
     
+  air_pressure = bmp.readPressure() / 100;
   Serial.print("Pressure = ");
-  Serial.print(bmp.readPressure());
-  Serial.println(" Pa");
+  Serial.print(air_pressure);
+  Serial.println("HPa");
+
   
 /**** UV Sensor ****/
 
@@ -163,7 +189,7 @@ my_device.uart_service();
   // Reads the echoPin, returns the sound wave travel time in microseconds
   duration = pulseIn(ECHO_1, HIGH);
 
-  Serial.println("Duriation1: ");
+  Serial.print("Duriation1: ");
   Serial.println(duration);
 
   // Clears the trigPin condition
@@ -176,7 +202,7 @@ my_device.uart_service();
   // Reads the echoPin, returns the sound wave travel time in microseconds
   duration = pulseIn(ECHO_2, HIGH);
 
-  Serial.println("Duriation2: ");
+  Serial.print("Duriation2: ");
   Serial.println(duration);
 
 
@@ -189,10 +215,13 @@ my_device.uart_service();
   delayMicroseconds(DELTA_TIME);
   digitalWrite(DUST_IN, HIGH);
   Serial.print("Dust: ");
-  Serial.println((voMeasured * 3.3/4095) * 170 - 0.1);
-  Serial.println(voMeasured);
+  Serial.print((voMeasured * 3.3/4095) * 170 - 0.1);
+  Serial.println("ug/cm3");
+  Serial.println("-----------");
 
   dp_update_all();
+
+
   delay(5000);
 }
 
