@@ -76,7 +76,7 @@ public:
 #endif /* WIFI_CONTROL_SELF_MODE */
 
 #if SUPPORT_GREEN_TIME
-    char TuyaWifi::get_green_time(TUYA_WIFI_TIME *time, const unsigned int timeout);
+    char get_green_time(TUYA_WIFI_TIME *time, const unsigned int timeout);
 #endif /* SUPPORT_GREEN_TIME */
 
 #if SUPPORT_RTC_TIME

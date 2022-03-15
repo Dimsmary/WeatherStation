@@ -17,6 +17,7 @@
 #define ECHO_2 18
 
 #define BAT 39
+#define TUYA_PIN 19
 
 #define temp_pid    1
 #define humi_pid    2

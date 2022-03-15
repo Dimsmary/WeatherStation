@@ -26,8 +26,8 @@
 /* some extra features defined end */
 
 #ifndef SUPPORT_MCU_FIRM_UPDATE
-#define WIFI_UART_RECV_BUF_LMT  32      //UART data receiving buffer size, can be reduced if the MCU has insufficient RAM
-#define WIFI_DATA_PROCESS_LMT   64      //UART data processing buffer size, according to the user DP data size, must be greater than 24
+#define WIFI_UART_RECV_BUF_LMT  64      //UART data receiving buffer size, can be reduced if the MCU has insufficient RAM
+#define WIFI_DATA_PROCESS_LMT   128      //UART data processing buffer size, according to the user DP data size, must be greater than 24
 #else
 #define WIFI_UART_RECV_BUF_LMT  128     //UART data receiving buffer size, can be reduced if the MCU has insufficient RAM
 /*  Select the appropriate UART data processing buffer size here 
@@ -37,7 +37,7 @@
 // #define WIFI_DATA_PROCESS_LMT   1200    //UART data processing buffer size. If the MCU firmware upgrade is required, the single-packet size is 1024, the buffer must be greater than 1030, or larger if the weather service is enabled
 #endif
 
-#define WIFIR_UART_SEND_BUF_LMT 64      //According to the user's DP data size, it must be greater than 48
+#define WIFIR_UART_SEND_BUF_LMT 256      //According to the user's DP data size, it must be greater than 48
 
 
 #endif /* __CONFIG_H__ */

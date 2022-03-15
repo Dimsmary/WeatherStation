@@ -37,8 +37,8 @@ unsigned char TuyaDataPoint::mcu_dp_raw_update(unsigned char dpid, const unsigne
 {
     unsigned short send_len = 0;
 
-    if (stop_update_flag == TY_ENABLE)
-        return TY_SUCCESS;
+    // if (stop_update_flag == TY_ENABLE)
+    //     return TY_SUCCESS;
     //
     send_len = tuya_uart.set_wifi_uart_byte(send_len, dpid);
     send_len = tuya_uart.set_wifi_uart_byte(send_len, DP_TYPE_RAW);
@@ -57,8 +57,8 @@ unsigned char TuyaDataPoint::mcu_dp_bool_update(unsigned char dpid, unsigned cha
 {
     unsigned short send_len = 0;
 
-    if (stop_update_flag == TY_ENABLE)
-        return TY_SUCCESS;
+    // if (stop_update_flag == TY_ENABLE)
+    //     return TY_SUCCESS;
 
     send_len = tuya_uart.set_wifi_uart_byte(send_len, dpid);
     send_len = tuya_uart.set_wifi_uart_byte(send_len, DP_TYPE_BOOL);
@@ -84,8 +84,8 @@ unsigned char TuyaDataPoint::mcu_dp_value_update(unsigned char dpid, unsigned lo
 {
     unsigned short send_len = 0;
 
-    if (stop_update_flag == TY_ENABLE)
-        return TY_SUCCESS;
+    // if (stop_update_flag == TY_ENABLE)
+    //     return TY_SUCCESS;
 
     send_len = tuya_uart.set_wifi_uart_byte(send_len, dpid);
     send_len = tuya_uart.set_wifi_uart_byte(send_len, DP_TYPE_VALUE);
@@ -107,8 +107,8 @@ unsigned char TuyaDataPoint::mcu_dp_string_update(unsigned char dpid, const unsi
 {
     unsigned short send_len = 0;
 
-    if (stop_update_flag == TY_ENABLE)
-        return TY_SUCCESS;
+    // if (stop_update_flag == TY_ENABLE)
+    //     return TY_SUCCESS;
     //
     send_len = tuya_uart.set_wifi_uart_byte(send_len, dpid);
     send_len = tuya_uart.set_wifi_uart_byte(send_len, DP_TYPE_STRING);
@@ -127,8 +127,8 @@ unsigned char TuyaDataPoint::mcu_dp_enum_update(unsigned char dpid, unsigned cha
 {
     unsigned short send_len = 0;
 
-    if (stop_update_flag == TY_ENABLE)
-        return TY_SUCCESS;
+    // if (stop_update_flag == TY_ENABLE)
+    //     return TY_SUCCESS;
 
     send_len = tuya_uart.set_wifi_uart_byte(send_len, dpid);
     send_len = tuya_uart.set_wifi_uart_byte(send_len, DP_TYPE_ENUM);
@@ -147,8 +147,8 @@ unsigned char TuyaDataPoint::mcu_dp_fault_update(unsigned char dpid, unsigned lo
 {
     unsigned short send_len = 0;
 
-    if (stop_update_flag == TY_ENABLE)
-        return TY_SUCCESS;
+    // if (stop_update_flag == TY_ENABLE)
+    //     return TY_SUCCESS;
 
     send_len = tuya_uart.set_wifi_uart_byte(send_len, dpid);
     send_len = tuya_uart.set_wifi_uart_byte(send_len, DP_TYPE_BITMAP);
